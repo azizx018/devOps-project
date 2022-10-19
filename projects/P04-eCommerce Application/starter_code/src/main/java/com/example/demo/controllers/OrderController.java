@@ -50,8 +50,10 @@ public class OrderController {
 	public ResponseEntity<List<UserOrder>> getOrdersForUser(@PathVariable String username) {
 		User user = userRepository.findByUsername(username);
 		if(user == null) {
+			log.info("order history lookup failure! ", ResponseEntity.notFound());
 			return ResponseEntity.notFound().build();
 		}
+		log.info("order history lookup success! ", ResponseEntity.ok());
 		return ResponseEntity.ok(orderRepository.findByUser(user));
 	}
 }
