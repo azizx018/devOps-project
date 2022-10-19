@@ -43,7 +43,9 @@ public class UserController {
 	@GetMapping("/{username}")
 	public ResponseEntity<User> findByUserName(@PathVariable String username) {
 		User user = userRepository.findByUsername(username);
+		log.error("username is null ",ResponseEntity.notFound());
 		return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(user);
+
 	}
 	
 	@PostMapping("/create")
