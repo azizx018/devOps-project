@@ -7,11 +7,13 @@ import com.example.demo.model.persistence.repositories.UserRepository;
 import com.example.demo.model.requests.CreateUserRequest;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,6 +53,34 @@ public class UserControllerTests {
         assertEquals(0, user.getId());
         assertEquals("test", user.getUsername());
         assertEquals("thisIsHashed",user.getPassword());
+
+    }
+    @Test
+    public void create_user_sad_path() throws Exception {
+        when(encoder.encode("testpassword")).thenReturn("thisIsHashed");
+        CreateUserRequest request = new CreateUserRequest();
+        request.setPassword("test");
+        request.setUsername("test");
+        request.setConfirmPassword("testpassword");
+
+        final ResponseEntity<User> response = userController.createUser(request);
+
+        assertNotNull(response);
+        assertEquals(400, response.getStatusCodeValue());
+
+
+    }
+    @Test
+    public void find_user_by_name_happy_path(){
+        User user = new User();
+        user.setUsername("test1");
+        user.setPassword("password1");
+        when(userRepository.findByUsername("test1")).thenReturn(user);
+
+        final ResponseEntity<User> response = userController.findByUserName("test1");
+
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
 
     }
 }
