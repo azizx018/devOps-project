@@ -36,6 +36,7 @@ public class OrderController {
 	public ResponseEntity<UserOrder> submit(@PathVariable String username) {
 		User user = userRepository.findByUsername(username);
 		if(user == null) {
+			log.info("order failure! ", ResponseEntity.notFound());
 			return ResponseEntity.notFound().build();
 		}
 		log.info("order request failure ",ResponseEntity.notFound());
