@@ -43,6 +43,7 @@ public class CartController {
 		}
 		Optional<Item> item = itemRepository.findById(request.getItemId());
 		if(!item.isPresent()) {
+			log.info("failed to add item to cart ", ResponseEntity.status(HttpStatus.NOT_FOUND));
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Cart cart = user.getCart();
@@ -51,7 +52,7 @@ public class CartController {
 		IntStream.range(0, request.getQuantity())
 			.forEach(i -> cart.addItem(item.get()));
 		cartRepository.save(cart);
-		log.info("this is the cart ", cartRepository.save(cart));
+		log.info("items succesfully added to cart ", ResponseEntity.ok(cart));
 		return ResponseEntity.ok(cart);
 	}
 	
