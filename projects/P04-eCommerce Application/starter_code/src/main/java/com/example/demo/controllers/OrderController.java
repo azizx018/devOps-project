@@ -38,7 +38,6 @@ public class OrderController {
 			log.info("order failure! ", ResponseEntity.notFound());
 			return ResponseEntity.notFound().build();
 		}
-		log.info("order request failure ",ResponseEntity.notFound());
 		UserOrder order = UserOrder.createFromCart(user.getCart());
 		orderRepository.save(order);
 		log.info("order sucessfully submitted ", ResponseEntity.ok());
