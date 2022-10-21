@@ -40,25 +40,18 @@ public class CartControllerTests {
     }
     @Test
     public void add_item_to_cart_happy_path(){
-        User user = new User();
-        Item item  = new Item();
+        User user = getUser();
+        Item item  = getItem();
         Cart cart = new Cart();
-        String username = "Spok1";
-
-        user.setUsername(username);
-        Long id = 1l;
-        item.setName("hammer");
-        item.setId(id);
-        item.setPrice(new BigDecimal(12));
         user.setCart(cart);
-        when(userRepository.findByUsername(username)).thenReturn(user);
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
 
         ModifyCartRequest request = new ModifyCartRequest();
-        request.setUsername(username);
-        request.setItemId(id);
+        request.setUsername(user.getUsername());
+        request.setItemId(item.getId());
         request.setQuantity(1);
 
-        when(itemRepository.findById(id)).thenReturn(Optional.of(item));
+        when(itemRepository.findById(item.getId())).thenReturn(Optional.of(item));
 
         when(cartRepository.save(cart)).thenReturn(cart);
         final ResponseEntity<Cart> response = cartController.addTocart(request);
@@ -73,30 +66,82 @@ public class CartControllerTests {
     }
     @Test
     public void add_item_to_cart_sad_path(){
-        User user = new User();
-        Item item1  = new Item();
+        User user = getUser();
+        Item item1  = getItem();
         Cart cart = new Cart();
-        String username = "Spok1";
 
-        user.setUsername(username);
-        Long id = 1l;
-        item1.setName("hammer");
-        item1.setId(id);
-        item1.setPrice(new BigDecimal(12));
         user.setCart(cart);
-        when(userRepository.findByUsername(username)).thenReturn(user);
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
 
         ModifyCartRequest request = new ModifyCartRequest();
-        request.setUsername(username);
+        request.setUsername(user.getUsername());
         request.setItemId(2);
         request.setQuantity(1);
 
-        when(itemRepository.findById(id)).thenReturn(Optional.of(item1));
+        when(itemRepository.findById(item1.getId())).thenReturn(Optional.of(item1));
 
         when(cartRepository.save(cart)).thenReturn(cart);
         final ResponseEntity<Cart> response = cartController.addTocart(request);
 
         assertNotNull(response);
         assertEquals(404, response.getStatusCodeValue());
+    }
+
+    private Item getItem() {
+        Item item  = new Item();
+        item.setName("hammer");
+        item.setId(1L);
+        item.setPrice(new BigDecimal(12));
+        return item;
+    }
+    private User getUser(){
+        User user = new User();
+        user.setUsername("Spok1");
+        return user;
+    }
+
+    @Test
+    public void remove_item_from_cart_happy_path(){
+        User user = getUser();
+        Cart cart = new Cart();
+        Item item = getItem();
+
+        cart.addItem(item);
+        user.setCart(cart);
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+
+        ModifyCartRequest request = new ModifyCartRequest();
+        request.setUsername(user.getUsername());
+        request.setItemId(item.getId());
+        request.setQuantity(1);
+        when(itemRepository.findById(item.getId())).thenReturn(Optional.of(item));
+        when(cartRepository.save(cart)).thenReturn(cart);
+
+        final ResponseEntity<Cart> response = cartController.removeFromcart(request);
+        assertNotNull(response);
+        assertEquals(0,cart.getItems().size());
+
+    }
+    @Test
+    public void remove_item_from_cart_sad_path(){
+        User user = getUser();
+        Cart cart = new Cart();
+        Item item = getItem();
+
+        cart.addItem(item);
+        user.setCart(cart);
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+
+        ModifyCartRequest request = new ModifyCartRequest();
+        request.setUsername(user.getUsername());
+        request.setItemId(item.getId());
+        request.setQuantity(1);
+        when(itemRepository.findById(item.getId())).thenReturn(Optional.of(item));
+        when(cartRepository.save(cart)).thenReturn(cart);
+
+        final ResponseEntity<Cart> response = cartController.removeFromcart(request);
+        assertNotNull(response);
+        assertEquals(0,cart.getItems().size());
+
     }
 }
